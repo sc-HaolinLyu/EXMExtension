@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Microsoft.Extensions.DependencyInjection.dll</HintPath>
     </Reference>
@@ -43,9 +47,37 @@
     <Reference Include="Sitecore.Mvc">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="Sitecore.XConnect">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.XConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.XConnect.Client">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.XConnect.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.XConnect.Client.Configuration">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.XConnect.Client.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.XConnect.Collection.Model">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.XConnect.Collection.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.XConnect.Core">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.XConnect.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.XConnect.Service">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.XConnect.Service.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Linq.Async">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\System.Linq.Async.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Async.Queryable">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\System.Linq.Async.Queryable.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\System.Web.Http.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Mvc">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\System.Web.Mvc.dll</HintPath>
     </Reference>
@@ -60,8 +92,10 @@
     <Compile Include="ExmToolController.cs" />
     <Compile Include="EXMExtensionRegister.cs" />
     <Compile Include="InternalMethods.cs" />
+    <Compile Include="Models\ContactFormModel.cs" />
     <Compile Include="Models\ExmToolGlobalModel.cs" />
-    <Compile Include="Models\TestViewModel.cs" />
+    <Compile Include="Models\GenerateContactModel.cs" />
+    <Compile Include="Models\TaskWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

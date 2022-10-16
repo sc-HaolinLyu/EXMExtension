@@ -14,6 +14,8 @@ namespace EXMExtension.Models
     {
         public static Dictionary<string, Tool> ToolMapping;
 
+        public static Dictionary<string, TaskWrapper> ActiveTasks;
+
         private object obj = new object();
         public ExmToolGlobalModel()
         {
