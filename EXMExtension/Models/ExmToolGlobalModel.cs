@@ -14,7 +14,7 @@ namespace EXMExtension.Models
     {
         public static Dictionary<string, Tool> ToolMapping;
 
-        public static Dictionary<string, TaskWrapper> ActiveTasks;
+        public static Dictionary<string, BaseTaskWrapper> ActiveTasks;
 
         private object obj = new object();
         public ExmToolGlobalModel()
@@ -26,10 +26,22 @@ namespace EXMExtension.Models
                     if (ToolMapping == null)
                     {
                         ToolMapping = new Dictionary<string, Tool>();
-                        InternalMethods.InitializeToolDictionary();
+                        GeneralMethods.InitializeToolDictionary();
                     }
                 }
             }
+
+            if (ActiveTasks == null)
+            {
+                lock (obj)
+                {
+                    if (ActiveTasks == null)
+                    {
+                        ActiveTasks = new Dictionary<string, BaseTaskWrapper>();
+                    }
+                }
+            }
+           
         }
     }
 

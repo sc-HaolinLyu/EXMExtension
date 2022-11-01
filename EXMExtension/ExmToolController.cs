@@ -6,9 +6,13 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Http;
 using EXMExtension.Models;
+using EXMExtension.Tools;
 using Sitecore;
+using Sitecore.Diagnostics;
 using Sitecore.localhost;
 using Sitecore.Mvc.Extensions;
+using Sitecore.Shell.Framework.Commands.TemplateBuilder;
+using HttpGetAttribute = System.Web.Http.HttpGetAttribute;
 
 namespace EXMExtension
 {
@@ -19,6 +23,7 @@ namespace EXMExtension
         public ExmToolController()
         {
             model = new ExmToolGlobalModel();
+            this.ViewData["ExmTools"] = ExmToolGlobalModel.ToolMapping;
         }
         
         [System.Web.Http.HttpGet]
@@ -37,20 +42,45 @@ namespace EXMExtension
         /// b. If there is active task, a progress bar should be rendered
         /// </summary>
         /// <returns></returns>
-        [System.Web.Http.HttpGet]
-        public ActionResult GenerateContacts(GenerateContactModel model = null, string toolKey = "GenerateContact")
+        [System.Web.Mvc.AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult GenerateContacts(string toolKey = "GenerateContacts")
         {
-            var modelWrapper =
-                InternalMethods.ReadValueFromDictionary(ExmToolGlobalModel.ActiveTasks, toolKey);
-            if (modelWrapper == null) // first request
+            //Initialze task model for the first request
+            if (!ExmToolGlobalModel.ActiveTasks.ContainsKey(toolKey))
             {
-                TaskWrapper task = new TaskWrapper();
-                ExmToolGlobalModel.ActiveTasks.Add(toolKey, task);
-                modelWrapper = task;
+                ExmToolGlobalModel.ActiveTasks.Add(toolKey, new GenerateContactModel());
             }
-            return View("~/Views/ExmTools/GenerateContacts.cshtml", modelWrapper.model);
+            var contactModel = ExmToolGlobalModel.ActiveTasks[toolKey] as GenerateContactModel;
+            return View("~/Views/ExmTools/GenerateContacts.cshtml", contactModel);
         }
 
+
+        [System.Web.Mvc.AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult ModifyContacts()
+        {
+            var contactOperation = Request.Form["contactOperation"];
+            if (contactOperation == "0")
+            {
+                return GenerateContacts();
+            }
+            if(contactOperation == "1")
+            {
+
+                return RemoveContact();
+            }
+
+            return GenerateContacts("GenerateContacts");
+        }
+
+        private ActionResult RemoveContact()
+        {
+            string toolKey = "GenerateContacts";
+            var contactModel = ExmToolGlobalModel.ActiveTasks[toolKey] as GenerateContactModel;
+            ContactAndListMethods.SetContactInfo(ContactOperations.RemoveContact, contactModel);
+            ContactAndListMethods.RemoveContacts(toolKey, 50);
+            ContactAndListMethods.RemoveLists(toolKey);
+            return GenerateContacts("GenerateContacts");
+        }
         /// <summary>
         /// The post request takes in the form model.
         /// 1. Do the input validation. If the params are not correct, return the error in the model
@@ -58,34 +88,44 @@ namespace EXMExtension
         /// 3. Based on the task result. Push the error in the error model or just show success information and show the form again
         /// </summary>
         /// <returns></returns>
-        [System.Web.Http.HttpPost]
-        public ActionResult GeneratingData([FromBody] ContactFormModel inputData)
+
+        private ActionResult GenerateContacts()
         {
-            var generateContactModel =
-                InternalMethods.ReadValueFromDictionary(ExmToolGlobalModel.ActiveTasks, inputData.toolKey).model;
-            int contactNum = -1;
-            var contactInfo = inputData.ContactCreationNum?.Split(',');
-            if (contactInfo.Length != 2)
+            string toolKey = "GenerateContacts";
+            var contactNumInput = Request.Form["contactNumber"];
+            var listNumInput = Request.Form["listNumber"];
+            var contactModel = ExmToolGlobalModel.ActiveTasks[toolKey] as GenerateContactModel;
+            contactModel.errorList.Clear();//clear old errors on each submission
+            if (!int.TryParse(contactNumInput, out int contactNum))
             {
-                generateContactModel.errorList.Add("contactField", "The parameter contact is not correct");
+                contactModel.errorList.Add("The contact number can't be parsed");
             }
-            else
+            else if(contactNum<=0||contactNum>10000)
             {
-                int.TryParse(contactInfo[1], out contactNum);
-                if (contactNum <= 0 || contactNum > 10000)
-                {
-                    generateContactModel.errorList.Add("contactField", "The parameter contact is not correct");
-                }
+                contactModel.errorList.Add("The contact number should between 1-10000");
+            }
+            if (!int.TryParse(listNumInput, out int listNum))
+            {
+                contactModel.errorList.Add("The list number can't be parsed");
+            }
+            else if (listNum <= 0 || listNum > 10)
+            {
+                contactModel.errorList.Add("The list number should between 1-10");
+            }
+            if (contactModel.isActive)
+            {
+                contactModel.errorList.Add("There are active task currently");
             }
 
-            if (generateContactModel.errorList.Count > 0)
+            if (contactModel.errorList.Count > 0)
             {
-                return GenerateContacts(generateContactModel);
+                return GenerateContacts(toolKey);
             }
 
-            InternalMethods.GenerateContacts(contactNum, inputData.toolKey, 50);
+            ContactAndListMethods.SetContactInfo(ContactOperations.GenerateContact, contactModel);
+            ContactAndListMethods.GenerateContacts(contactNum, listNum, toolKey, 50);
             
-            return GenerateContacts();
+            return GenerateContacts(toolKey);
         }
 
         

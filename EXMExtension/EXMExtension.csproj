@@ -44,8 +44,23 @@
     <Reference Include="Sitecore.Kernel">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.Kernel.dll</HintPath>
     </Reference>
+    <Reference Include="Sitecore.ListManagement">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.ListManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.ListManagement.Services">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.ListManagement.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.ListManagement.XConnect">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.ListManagement.XConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.ListManagement.XConnect.Web">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.ListManagement.XConnect.Web.dll</HintPath>
+    </Reference>
     <Reference Include="Sitecore.Mvc">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.Services.Core">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.Services.Core.dll</HintPath>
     </Reference>
     <Reference Include="Sitecore.XConnect">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.XConnect.dll</HintPath>
@@ -66,12 +81,17 @@
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.XConnect.Service.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Linq.Async">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\System.Linq.Async.dll</HintPath>
     </Reference>
     <Reference Include="System.Linq.Async.Queryable">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\System.Linq.Async.Queryable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Http, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -91,7 +111,8 @@
   <ItemGroup>
     <Compile Include="ExmToolController.cs" />
     <Compile Include="EXMExtensionRegister.cs" />
-    <Compile Include="InternalMethods.cs" />
+    <Compile Include="Tools\ContactAndListMethods.cs" />
+    <Compile Include="Tools\GeneralMethods.cs" />
     <Compile Include="Models\ContactFormModel.cs" />
     <Compile Include="Models\ExmToolGlobalModel.cs" />
     <Compile Include="Models\GenerateContactModel.cs" />

@@ -6,17 +6,13 @@ using System.Threading.Tasks;
 
 namespace EXMExtension.Models
 {
-    public class TaskWrapper
+    public class BaseTaskWrapper
     {
         public Task task;
 
-        public GenerateContactModel model;
-
-        public TaskWrapper()
+        public BaseTaskWrapper()
         {
             task = null;
-
-            model = new GenerateContactModel();
         }
     }
 }
