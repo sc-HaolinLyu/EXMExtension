@@ -72,6 +72,64 @@ namespace EXMExtension
             return GenerateContacts("GenerateContacts");
         }
 
+        /// <summary>
+        /// Initialize the auth and crypto key based on the connection string. Set it as invalid if it doesn't exist
+        /// </summary>
+        /// <param name="toolKey"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult DecryptEmailLink(string toolKey = "DecryptEmailLink")
+        {
+            if (!ExmToolGlobalModel.ActiveTasks.ContainsKey(toolKey))
+            {
+                ExmToolGlobalModel.ActiveTasks.Add(toolKey, new DecryptEmailLinkModel());
+                ExmMethods.InitializeKeys();
+            }
+            var decryptEmailLinkModel = ExmToolGlobalModel.ActiveTasks[toolKey] as DecryptEmailLinkModel;
+            if(string.Equals(DecryptEmailLinkModel.AuthKey, "invalid")|| string.Equals(DecryptEmailLinkModel.CryptoKey, "invalid"))
+                decryptEmailLinkModel.ErrorList.Add("The connectionstring auth key or crypto key is invalid");
+            return View("~/Views/ExmTools/DecryptEmailLink.cshtml", decryptEmailLinkModel);
+        }
+
+        [System.Web.Mvc.AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult DecryptEmailLink()
+        {
+            string toolKey = "DecryptEmailLink";
+            var decrptyEmailLinkModel = ExmToolGlobalModel.ActiveTasks[toolKey] as DecryptEmailLinkModel;
+            decrptyEmailLinkModel.Reset();
+            decrptyEmailLinkModel.QueryString = Request.Form["queryString"];
+            decrptyEmailLinkModel.OverrideAuthKey = Request.Form["authKey"];
+            decrptyEmailLinkModel.OverrideCryptoKey = Request.Form["cryptoKey"];
+            if (decrptyEmailLinkModel.OverrideAuthKey.Length < 64)
+            {
+                if(string.Equals(DecryptEmailLinkModel.AuthKey, "invalid"))
+                    decrptyEmailLinkModel.ErrorList.Add("There is no valid authKey avaliable");
+                else
+                    decrptyEmailLinkModel.ErrorList.Add("The override authKey is invalid, use the default auth key");
+                decrptyEmailLinkModel.OverrideAuthKey = DecryptEmailLinkModel.AuthKey;
+            }
+            if (decrptyEmailLinkModel.OverrideCryptoKey.Length < 64)
+            {
+                if(string.Equals(DecryptEmailLinkModel.CryptoKey, "invalid"))
+                    decrptyEmailLinkModel.ErrorList.Add("There is no valid cryptoKey avaliable");
+                else
+                    decrptyEmailLinkModel.ErrorList.Add(
+                        "The override cryptoKey is invalid, use the default crypto key");
+                decrptyEmailLinkModel.OverrideCryptoKey = DecryptEmailLinkModel.CryptoKey;
+            }
+
+            if (string.Equals(decrptyEmailLinkModel.OverrideAuthKey, "invalid") ||
+                string.Equals(decrptyEmailLinkModel.OverrideCryptoKey, "invalid"))
+                return DecryptEmailLink("DecryptEmailLink");
+            decrptyEmailLinkModel.DecryptionResult = ExmMethods.DecryptQueryString(decrptyEmailLinkModel.OverrideCryptoKey,
+                decrptyEmailLinkModel.OverrideAuthKey, decrptyEmailLinkModel.QueryString);
+            if (string.IsNullOrEmpty(decrptyEmailLinkModel.DecryptionResult))
+                decrptyEmailLinkModel.ErrorList.Add("decrypt failed");
+            return DecryptEmailLink("DecryptEmailLink");
+        }
+
+
+
         private ActionResult RemoveContact()
         {
             string toolKey = "GenerateContacts";
@@ -95,29 +153,29 @@ namespace EXMExtension
             var contactNumInput = Request.Form["contactNumber"];
             var listNumInput = Request.Form["listNumber"];
             var contactModel = ExmToolGlobalModel.ActiveTasks[toolKey] as GenerateContactModel;
-            contactModel.errorList.Clear();//clear old errors on each submission
+            contactModel.ErrorList.Clear();//clear old errors on each submission
             if (!int.TryParse(contactNumInput, out int contactNum))
             {
-                contactModel.errorList.Add("The contact number can't be parsed");
+                contactModel.ErrorList.Add("The contact number can't be parsed");
             }
             else if(contactNum<=0||contactNum>10000)
             {
-                contactModel.errorList.Add("The contact number should between 1-10000");
+                contactModel.ErrorList.Add("The contact number should between 1-10000");
             }
             if (!int.TryParse(listNumInput, out int listNum))
             {
-                contactModel.errorList.Add("The list number can't be parsed");
+                contactModel.ErrorList.Add("The list number can't be parsed");
             }
             else if (listNum <= 0 || listNum > 10)
             {
-                contactModel.errorList.Add("The list number should between 1-10");
+                contactModel.ErrorList.Add("The list number should between 1-10");
             }
-            if (contactModel.isActive)
+            if (contactModel.IsActive)
             {
-                contactModel.errorList.Add("There are active task currently");
+                contactModel.ErrorList.Add("There are active task currently");
             }
 
-            if (contactModel.errorList.Count > 0)
+            if (contactModel.ErrorList.Count > 0)
             {
                 return GenerateContacts(toolKey);
             }

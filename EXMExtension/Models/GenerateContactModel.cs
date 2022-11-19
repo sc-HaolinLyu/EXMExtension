@@ -9,76 +9,70 @@ namespace EXMExtension.Models
 {
     public class GenerateContactModel:BaseTaskWrapper
     {
-        public bool isActive;
+        public bool IsActive;
 
-        public Task _task;
+        public int CurrentProgressContact;
 
-        public List<string> errorList;
+        public int CurrentProgressList;
 
-        public bool success;
+        public int TargetContact;
 
-        public int currentProgressContact;
+        public int TargetList;
 
-        public int currentProgressList;
+        public string [] CurrentInfo;
 
-        public int targetContact;
+        public string [] TargetInfo;
 
-        public int targetList;
+        public string Title;
 
-        public string [] currentInfo;
-
-        public string [] targetInfo;
-
-        public string title;
-
-        public ContactOperations current;
+        public ContactOperations Current;
 
         public GenerateContactModel()
         {
-            isActive = false;
+            IsActive = false;
 
-            _task = null;
+            Task = null;
 
-            errorList = new List<string>();
+            ErrorList = new List<string>();
 
-            success = false;
+            Success = false;
 
-            currentProgressContact = -1;
+            CurrentProgressContact = -1;
 
-            currentProgressList = -1;
+            CurrentProgressList = -1;
 
-            targetContact = -1;
+            TargetContact = -1;
 
-            targetList = -1;
+            TargetList = -1;
 
-            current = ContactOperations.Idle;
+            Current = ContactOperations.Idle;
 
-            currentInfo = new string[2];
+            CurrentInfo = new string[2];
 
-            targetInfo = new string[2];
+            TargetInfo = new string[2];
         }
 
-        public void Reset()
+        public override void Reset()
         {
-            isActive = false;
+            IsActive = false;
 
-            _task = null;
+            Task = null;
 
-            success = false;
+            Success = false;
 
-            currentProgressContact = -1;
+            CurrentProgressContact = -1;
 
-            currentProgressList = -1;
+            CurrentProgressList = -1;
 
-            targetContact = -1;
+            TargetContact = -1;
 
-            targetList = -1;
+            TargetList = -1;
 
-            current = ContactOperations.Idle;
+            Current = ContactOperations.Idle;
 
-            currentInfo = new string[2];
+            CurrentInfo = new string[2];
 
-            targetInfo = new string[2];
+            TargetInfo = new string[2];
         }
     }
 }

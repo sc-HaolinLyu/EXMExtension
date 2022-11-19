@@ -41,6 +41,19 @@
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="Sitecore.EmailCampaign">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.EmailCampaign.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.EmailCampaign.Core">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.EmailCampaign.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.ExM.Framework">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.ExM.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.Framework.Conditions, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.Framework.Conditions.dll</HintPath>
+    </Reference>
     <Reference Include="Sitecore.Kernel">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.Kernel.dll</HintPath>
     </Reference>
@@ -111,9 +124,10 @@
   <ItemGroup>
     <Compile Include="ExmToolController.cs" />
     <Compile Include="EXMExtensionRegister.cs" />
+    <Compile Include="Models\DecryptEmailLinkModel.cs" />
     <Compile Include="Tools\ContactAndListMethods.cs" />
+    <Compile Include="Tools\ExmMethods.cs" />
     <Compile Include="Tools\GeneralMethods.cs" />
-    <Compile Include="Models\ContactFormModel.cs" />
     <Compile Include="Models\ExmToolGlobalModel.cs" />
     <Compile Include="Models\GenerateContactModel.cs" />
     <Compile Include="Models\TaskWrapper.cs" />

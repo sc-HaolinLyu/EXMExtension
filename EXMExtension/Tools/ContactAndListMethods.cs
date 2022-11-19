@@ -70,26 +70,26 @@ namespace EXMExtension.Tools
                                     generatedContacts.Add(curContact);
                                 }
                                 Thread.Sleep(200);
-                                Log.Info("The current progress "+model.currentProgressContact+"|"+model.currentProgressList+"|"+contactNumTemp+"|"+batchsizeTemp, new object());
+                                Log.Info("The current progress "+model.CurrentProgressContact+"|"+model.CurrentProgressList+"|"+contactNumTemp+"|"+batchsizeTemp, new object());
                                 client.Submit();
                                 AddContactsToList(id, generatedContacts);
                             }
 
-                            model.currentProgressContact = 0;
-                            model.currentProgressList++;
+                            model.CurrentProgressContact = 0;
+                            model.CurrentProgressList++;
                         }
                     }
                     catch (XdbExecutionException ex)
                     {
                         model.Reset();
-                        model.errorList.Add("XConnect Error during the contact adding process " + ex.Message);
-                        model.task = null;
+                        model.ErrorList.Add("XConnect Error during the contact adding process " + ex.Message);
+                        model.Task = null;
                     }
                     catch (Exception ex)
                     {
                         model.Reset();
-                        model.errorList.Add("General Error during the contact adding process " + ex.Message);
-                        model.task = null;
+                        model.ErrorList.Add("General Error during the contact adding process " + ex.Message);
+                        model.Task = null;
                     }
                 }
             });
@@ -98,15 +98,15 @@ namespace EXMExtension.Tools
 
                 var model = ExmToolGlobalModel.ActiveTasks[toolKey] as GenerateContactModel;
                 model?.Reset();
-                model.task = null;
+                model.Task = null;
             });
             var task = ExmToolGlobalModel.ActiveTasks[toolKey] as GenerateContactModel;
-            task.currentProgressContact = 0;
-            task.currentProgressList = 0;
-            task.errorList = new List<string>();
-            task.isActive = true;
-            task.targetContact = contactNum;
-            task.targetList = listNum;
+            task.CurrentProgressContact = 0;
+            task.CurrentProgressList = 0;
+            task.ErrorList = new List<string>();
+            task.IsActive = true;
+            task.TargetContact = contactNum;
+            task.TargetList = listNum;
             contactTask.Start();
         }
 
@@ -142,13 +142,13 @@ namespace EXMExtension.Tools
                                 counter = 0;
                             }
 
-                            model.currentProgressContact += enumerator.Current.Count;
+                            model.CurrentProgressContact += enumerator.Current.Count;
                         }
                     }
                     catch (Exception e)
                     {
                         model.Reset();
-                        model.errorList.Add("The contacts were failed to be removed");
+                        model.ErrorList.Add("The contacts were failed to be removed");
                     }
                 }
             });
@@ -157,8 +157,8 @@ namespace EXMExtension.Tools
                 model.Reset();
             });
             model.Reset();
-            model.isActive = true;
-            model.current = ContactOperations.RemoveContact;
+            model.IsActive = true;
+            model.Current = ContactOperations.RemoveContact;
             removeTask.Start();
         }
 
@@ -178,7 +178,7 @@ namespace EXMExtension.Tools
             }
             catch (Exception e)
             {
-                model.errorList.Add("The fake lists were failed to be removed");
+                model.ErrorList.Add("The fake lists were failed to be removed");
             }
             
 
@@ -191,20 +191,20 @@ namespace EXMExtension.Tools
             {
                 case ContactOperations.GenerateContact:
                 {
-                    model.currentInfo[0] = "the current generated contacts:";
-                    model.currentInfo[1] = "the current generated lists:";
-                    model.targetInfo[0] = "The total contacts that will be generated:";
-                    model.targetInfo[1] = "The total lists that will be generated:";
-                    model.title = "There is an active contact generation task right now, Please wait for a while";
-                    model.current = ContactOperations.GenerateContact;
+                    model.CurrentInfo[0] = "the current generated contacts:";
+                    model.CurrentInfo[1] = "the current generated lists:";
+                    model.TargetInfo[0] = "The total contacts that will be generated:";
+                    model.TargetInfo[1] = "The total lists that will be generated:";
+                    model.Title = "There is an active contact generation task right now, Please wait for a while";
+                    model.Current = ContactOperations.GenerateContact;
                     break;
                 }
                 case ContactOperations.RemoveContact:
                 {
-                    model.currentInfo[0] = "The total contacts that will be removed:";
-                    model.targetInfo[0] = "The current removed contacts:";
-                    model.title = "There is an active contact purging task right now, Please wait for a while";
-                    model.current = ContactOperations.RemoveContact;
+                    model.CurrentInfo[0] = "The total contacts that will be removed:";
+                    model.TargetInfo[0] = "The current removed contacts:";
+                    model.Title = "There is an active contact purging task right now, Please wait for a while";
+                    model.Current = ContactOperations.RemoveContact;
                         break;
                 }
                 default:
@@ -237,7 +237,7 @@ namespace EXMExtension.Tools
 
             client.SetFacet(contact, emails);
             if (model != null)
-                model.currentProgressContact++;
+                model.CurrentProgressContact++;
         }
 
         private static void SetContactIdentifier(XConnectClient client, Contact contact)
