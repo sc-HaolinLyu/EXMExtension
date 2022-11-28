@@ -1,0 +1,31 @@
+﻿@{
+    Page.Title = "SendAutomatedEmail";
+    Layout = "~/Views/ExmTools/_Layout.cshtml";
+}
+@model EXMExtension.Models.SendAutomatedEmailModel
+<form method="post" action="SendAutomatedEmail">
+    <div class="mb-3 col-6">
+        <label for="messageId" class="form-label">The automated email campaign id</label>
+        <input type="text" class="form-control" id="messageId" name="messageId" value="@Request.Form["messageId"]" />
+    </div>
+    <div class="mb-3 col-6">
+        <label for="identifierSource" class="form-label">The contact identifier source</label>
+        <input class="form-control" type="text" id="identifierSource" name="identifierSource" value="@Request.Form["identifierSource"]" />
+    </div>
+    <div class="mb-3 col-6">
+        <label for="identifierValue" class="form-label">The contact identifier value</label>
+        <input class="form-control" type="text" id="identifierValue" name="identifierValue" value="@Request.Form["identifierValue"]" />
+    </div>
+    <div class="mb-3 col-3">
+        <button type="submit" class="btn btn-primary mb-3">Start to Send the automated email campaign!</button>
+    </div>
+</form>
+@if (Model.ErrorList.Count > 0)
+{
+    foreach (var er in Model.ErrorList)
+    {
+    <div class="alert alert-primary" role="alert">
+        @er
+    </div>
+    }
+}

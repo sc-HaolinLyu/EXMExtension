@@ -1,0 +1,37 @@
+﻿@{
+    Page.Title = "DecryptEmailLink";
+    Layout = "~/Views/ExmTools/_Layout.cshtml";
+}
+@model EXMExtension.Models.DecryptEmailLinkModel
+<form method="post" action="DecryptEmailLink">
+    <div class="mb-3 col-6">
+        <label for="cryptoKey" class="form-label">The override crypto key</label>
+        <input type="text" class="form-control" id="cryptoKey" name="cryptoKey" value="@Request.Form["cryptoKey"]" />
+    </div>
+    <div class="mb-3 col-6">
+        <label for="authKey" class="form-label">The override auth key</label>
+        <input class="form-control" type="text" id="authKey" name="authKey" value="@Request.Form["authKey"]" />
+    </div>
+    <div class="mb-3 col-6">
+        <label for="queryString" class="form-label">The queryString you want to decrypt</label>
+        <input class="form-control" type="text" id="queryString" name="queryString" value="@Request.Form["queryString"]" />
+    </div>
+    <div class="mb-3 col-3">
+        <button type="submit" class="btn btn-primary mb-3">Start to Decrypt the link!</button>
+    </div>
+</form>
+@if (Model.ErrorList.Count > 0)
+{
+    foreach (var er in Model.ErrorList)
+    {
+    <div class="alert alert-primary" role="alert">
+        @er
+    </div>
+    }
+}
+@if (!string.IsNullOrEmpty(Model.DecryptionResult))
+{
+    <div class="alert alert-primary" role="alert">
+        @Model.DecryptionResult
+    </div>
+}

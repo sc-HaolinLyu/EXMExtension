@@ -44,11 +44,21 @@
     <Reference Include="Sitecore.EmailCampaign">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.EmailCampaign.dll</HintPath>
     </Reference>
+    <Reference Include="Sitecore.EmailCampaign.Cd">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.EmailCampaign.Cd.dll</HintPath>
+    </Reference>
     <Reference Include="Sitecore.EmailCampaign.Core">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.EmailCampaign.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Sitecore.EmailCampaign.Model, Version=12.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.EmailCampaign.Model.dll</HintPath>
+    </Reference>
     <Reference Include="Sitecore.ExM.Framework">
       <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.ExM.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.ExperienceForms">
+      <HintPath>..\..\..\..\..\..\inetpub\wwwroot\SC1021sc.dev.local\bin\Sitecore.ExperienceForms.dll</HintPath>
     </Reference>
     <Reference Include="Sitecore.Framework.Conditions, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -125,6 +135,7 @@
     <Compile Include="ExmToolController.cs" />
     <Compile Include="EXMExtensionRegister.cs" />
     <Compile Include="Models\DecryptEmailLinkModel.cs" />
+    <Compile Include="Models\SendAutomatedEmailModel.cs" />
     <Compile Include="Tools\ContactAndListMethods.cs" />
     <Compile Include="Tools\ExmMethods.cs" />
     <Compile Include="Tools\GeneralMethods.cs" />
@@ -133,11 +144,15 @@
     <Compile Include="Models\TaskWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="App_Config\Include\ExmTool\ExmTool.config" />
+    <None Include="Views\ExmTools\DecryptEmailLink.cshtml" />
+    <None Include="Views\ExmTools\DispatchSummary.cshtml" />
+    <None Include="Views\ExmTools\GenerateContacts.cshtml" />
+    <None Include="Views\ExmTools\Home.cshtml" />
+    <None Include="Views\ExmTools\SendAutomatedEmail.cshtml" />
+    <None Include="Views\ExmTools\_Layout.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

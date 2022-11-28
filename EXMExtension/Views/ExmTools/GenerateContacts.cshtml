@@ -1,0 +1,74 @@
+﻿@{
+    Page.Title = "Title goes here";
+    Layout = "~/Views/ExmTools/_Layout.cshtml";
+}
+@using EXMExtension.Tools
+@model EXMExtension.Models.GenerateContactModel
+<div>
+    <div>Generate Contact</div>
+    @if (Model.IsActive)
+    {
+        
+        double contactPercent = @Model.CurrentProgressContact * 1.0 / @Model.TargetContact;
+        contactPercent *= 100;
+        <div>@Model.Title</div>
+        <div>@Model.CurrentInfo[0] @Model.CurrentProgressContact</div>
+        <div>@Model.TargetInfo[0] @Model.TargetContact</div>
+        
+        if (Model.Current == ContactOperations.GenerateContact)
+        {
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: @contactPercent%" aria-valuenow="@contactPercent" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            double listPercent = @Model.CurrentProgressList * 1.0 / @Model.TargetList;
+            listPercent *= 100;
+            <div>@Model.CurrentInfo[1] @Model.CurrentProgressList</div>
+            <div>@Model.TargetInfo[1] @Model.TargetList</div>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: @listPercent%" aria-valuenow="@listPercent" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        }
+        <script type="text/javascript">
+            setInterval(() => {
+                window.location.href = "/ExmTool/GenerateContacts";
+            }, 2000);
+        </script>
+    }
+    else
+    {
+        <form method="post" action="ModifyContacts">
+            <div class="mb-3 col-6">
+                <label for="contactNumber" class="form-label">Number of contact you want to generate</label>
+                <input type="text" class="form-control" id="contactNumber" name="contactNumber" value="@Request.Form["contactNumber"]" />
+            </div>
+            <div class="mb-3 col-6">
+                <label for="listNumber" class="form-label">Number of list you want to generate</label>
+                <input class="form-control" type="text" id="listNumber" name="listNumber" value="@Request.Form["listNumber"]" />
+            </div>
+            <div class="form-check-inline">
+                <input class="form-check-input" type="radio" name="contactOperation" value="0" id="generateContact" checked>
+                <label class="form-check-label" for="generateContact">
+                    Generate Contact
+                </label>
+            </div>
+            <div class="form-check-inline">
+                <input class="form-check-input" type="radio" name="contactOperation" value="1" id="removeContact" >
+                <label class="form-check-label" for="removeContact">
+                    Remove Contact
+                </label>
+            </div>
+            <div class="mb-3 col-3">
+                <button type="submit" class="btn btn-primary mb-3">Start to Generate Contact!</button>
+            </div>
+        </form>
+        if (Model.ErrorList.Count > 0)
+        {
+            foreach (var er in Model.ErrorList)
+            {
+                <div class="alert alert-primary" role="alert">
+                    @er
+                </div>
+            }
+        }
+    }
+</div>

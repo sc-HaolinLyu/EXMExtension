@@ -11,6 +11,17 @@ using Sitecore.ExM.Framework.Diagnostics;
 using Sitecore.ExM.Framework.Helpers;
 using Sitecore.Framework.Conditions;
 using Sitecore.Modules.EmailCampaign.Core.Crypto;
+using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using Sitecore.DependencyInjection;
+using Sitecore.EmailCampaign.Model.Messaging;
+using Sitecore.ExperienceForms.Processing;
+using Sitecore.XConnect;
+using Sitecore.XConnect.Client;
+using Sitecore.XConnect.Collection.Model;
+using Sitecore.EmailCampaign.Cd.Services;
+
+
 
 namespace EXMExtension.Tools
 {
@@ -21,6 +32,9 @@ namespace EXMExtension.Tools
         private static string _cryptoKeyName = "EXM.CryptographicKey";
 
         private static string _authKeyName = "EXM.AuthenticationKey";
+
+        private static IClientApiService _clientApiService =
+            ServiceLocator.ServiceProvider.GetService<IClientApiService>();
 
         public static void InitializeKeys()
         {
@@ -53,6 +67,38 @@ namespace EXMExtension.Tools
                 return result; // decryption fail
         }
 
+        public static void SendAutomatedEmail(SendAutomatedEmailModel model)
+        {
+            
+            ContactIdentifier contactIdentifier = new ContactIdentifier(model.IdentifierSource, model.IdentifierValue, ContactIdentifierType.Known);
+            using (IXdbContext context = 
+                Sitecore.XConnect.Client.Configuration.SitecoreXConnectClientConfiguration.GetClient())
+            {
+                ContactExpandOptions expandOptions = new ContactExpandOptions(EmailAddressList.DefaultFacetKey);
+                var contact = context.Get(new IdentifiedContactReference(contactIdentifier.Source, contactIdentifier.Identifier), new ContactExecutionOptions(expandOptions));
+                if (contact == null)
+                {
+                    model.ErrorList.Add("The contact can not be found based on the identifier information");
+                    return;
+                }
+
+            }
+            try
+            {
+                ExmMethods._clientApiService.SendAutomatedMessage(new AutomatedMessage
+                {
+                    ContactIdentifier = contactIdentifier,
+                    MessageId = new Guid(model.MessageId),
+                    CustomTokens = null,
+                });
+            }
+            catch (Exception ex)
+            {
+                model.ErrorList.Add("The automated email was failed to send");
+                ExmMethods._exmLogger.LogError(ex.Message, ex);
+            }
+        }
+
         private static byte[] ArgumentAsHexadecimalToByteArray(string value, string argumentName, bool acceptEmpty, ILogger logger)
         {
             Condition.Requires(argumentName, "argumentName").IsNotNull();
@@ -63,5 +109,7 @@ namespace EXMExtension.Tools
             }
             return byteArray;
         }
+
+        
     }
 }

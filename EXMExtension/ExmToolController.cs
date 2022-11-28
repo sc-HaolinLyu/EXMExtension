@@ -128,6 +128,49 @@ namespace EXMExtension
             return DecryptEmailLink("DecryptEmailLink");
         }
 
+        /// <summary>
+        /// Initialize the Model in the ActiveTasks list. Then generate the form.
+        /// </summary>
+        /// <param name="toolKey"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult SendAutomatedEmail(string toolKey = "SendAutomatedEmail")
+        {
+            if (!ExmToolGlobalModel.ActiveTasks.ContainsKey(toolKey))
+            {
+                ExmToolGlobalModel.ActiveTasks.Add(toolKey, new SendAutomatedEmailModel());
+            }
+            var sendAutomatedEmailModel = ExmToolGlobalModel.ActiveTasks[toolKey] as SendAutomatedEmailModel;
+            return View("~/Views/ExmTools/SendAutomatedEmail.cshtml", sendAutomatedEmailModel);
+        }
+
+        /// <summary>
+        /// Try to send the automated email campaign and regenerate the form.
+        /// </summary>
+        /// <returns></returns>
+        [System.Web.Mvc.AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult SendAutomatedEmail()
+        {
+            string toolKey = "SendAutomatedEmail";
+            var sendAutomatedEmailModel = ExmToolGlobalModel.ActiveTasks[toolKey] as SendAutomatedEmailModel;
+            sendAutomatedEmailModel.Reset();
+            sendAutomatedEmailModel.MessageId = Request.Form["messageId"];
+            sendAutomatedEmailModel.IdentifierSource = Request.Form["identifierSource"];
+            sendAutomatedEmailModel.IdentifierValue = Request.Form["identifierValue"];
+            if(string.IsNullOrEmpty(sendAutomatedEmailModel.MessageId))
+                sendAutomatedEmailModel.ErrorList.Add("The automated email id should not be empty");
+            if (string.IsNullOrEmpty(sendAutomatedEmailModel.IdentifierSource))
+                sendAutomatedEmailModel.ErrorList.Add("The identifier source should not be empty");
+            if (string.IsNullOrEmpty(sendAutomatedEmailModel.IdentifierValue))
+                sendAutomatedEmailModel.ErrorList.Add("The identifier value should not be empty");
+            if(sendAutomatedEmailModel.ErrorList.Count>0)
+                return SendAutomatedEmail(toolKey);
+            ExmMethods.SendAutomatedEmail(sendAutomatedEmailModel);
+            return SendAutomatedEmail(toolKey);
+        }
+
+
+
 
 
         private ActionResult RemoveContact()

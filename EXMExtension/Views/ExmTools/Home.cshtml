@@ -1,0 +1,31 @@
+﻿@{
+    Page.Title = "Title goes here";
+    Layout = "~/Views/ExmTools/_Layout.cshtml";
+    var tools = ExmToolGlobalModel.ToolMapping;
+    var dummy = "mytest";
+}
+@using EXMExtension.Models
+@model EXMExtension.Models.ExmToolGlobalModel
+<div>
+    This is the entry page
+    
+    
+    <ul class="list-group">
+        @foreach (var key in tools.Keys)
+        {
+            var tool = tools[key];
+            <li class="list-group-item">
+                <p>
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#@tool.Action" aria-expanded="false" aria-controls="@tool.Sequence">
+                        @tool.Name
+                    </button>
+                </p>
+                <div class="collapse" id="@tool.Action">
+                    <div class="card card-body">
+                       @tool.Description
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+</div>
