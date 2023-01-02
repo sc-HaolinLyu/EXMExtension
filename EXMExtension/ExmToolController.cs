@@ -23,13 +23,13 @@ namespace EXMExtension
         public ExmToolController()
         {
             model = new ExmToolGlobalModel();
-            this.ViewData["ExmTools"] = ExmToolGlobalModel.ToolMapping;
         }
         
         [System.Web.Http.HttpGet]
         public ActionResult Index()
         {
-
+            model.ActiveToolName = "Home";
+            this.ViewData["ExmToolName"] = model.ActiveToolName;
             return PartialView("~/Views/ExmTools/Home.cshtml",model);
         }
 
@@ -46,6 +46,8 @@ namespace EXMExtension
         public ActionResult GenerateContacts(string toolKey = "GenerateContacts")
         {
             //Initialze task model for the first request
+            model.ActiveToolName = toolKey;
+            this.ViewData["ExmToolName"] = model.ActiveToolName;
             if (!ExmToolGlobalModel.ActiveTasks.ContainsKey(toolKey))
             {
                 ExmToolGlobalModel.ActiveTasks.Add(toolKey, new GenerateContactModel());
@@ -80,6 +82,8 @@ namespace EXMExtension
         [System.Web.Mvc.AcceptVerbs(HttpVerbs.Get)]
         public ActionResult DecryptEmailLink(string toolKey = "DecryptEmailLink")
         {
+            model.ActiveToolName = toolKey;
+            this.ViewData["ExmToolName"] = model.ActiveToolName;
             if (!ExmToolGlobalModel.ActiveTasks.ContainsKey(toolKey))
             {
                 ExmToolGlobalModel.ActiveTasks.Add(toolKey, new DecryptEmailLinkModel());
@@ -136,9 +140,11 @@ namespace EXMExtension
         [System.Web.Mvc.AcceptVerbs(HttpVerbs.Get)]
         public ActionResult SendAutomatedEmail(string toolKey = "SendAutomatedEmail")
         {
+            model.ActiveToolName = toolKey;
+            this.ViewData["ExmToolName"] = model.ActiveToolName;
             if (!ExmToolGlobalModel.ActiveTasks.ContainsKey(toolKey))
             {
-                ExmToolGlobalModel.ActiveTasks.Add(toolKey, new SendAutomatedEmailModel());
+                ExmToolGlobalModel.ActiveTasks.Add(toolKey, new SendAutomatedEmailModel(toolKey));
             }
             var sendAutomatedEmailModel = ExmToolGlobalModel.ActiveTasks[toolKey] as SendAutomatedEmailModel;
             return View("~/Views/ExmTools/SendAutomatedEmail.cshtml", sendAutomatedEmailModel);
@@ -163,10 +169,44 @@ namespace EXMExtension
                 sendAutomatedEmailModel.ErrorList.Add("The identifier source should not be empty");
             if (string.IsNullOrEmpty(sendAutomatedEmailModel.IdentifierValue))
                 sendAutomatedEmailModel.ErrorList.Add("The identifier value should not be empty");
-            if(sendAutomatedEmailModel.ErrorList.Count>0)
+            if (sendAutomatedEmailModel.ErrorList.Count>0)
                 return SendAutomatedEmail(toolKey);
             ExmMethods.SendAutomatedEmail(sendAutomatedEmailModel);
             return SendAutomatedEmail(toolKey);
+        }
+
+        /// <summary>
+        /// Try to pick up a random contact, list information on every refresh
+        /// </summary>
+        /// <returns></returns>
+        [System.Web.Mvc.AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult PickUpContactAndList(string toolKey = "PickUpContactAndList")
+        {
+            model.ActiveToolName = "PickUpContactAndList";
+            this.ViewData["ExmToolName"] = model.ActiveToolName;
+            if (!ExmToolGlobalModel.ActiveTasks.ContainsKey(toolKey))
+            {
+                ExmToolGlobalModel.ActiveTasks.Add(toolKey, new PickUpContactAndListModel(toolKey));
+            }
+            var pickUpContactAndListModel = ExmToolGlobalModel.ActiveTasks[toolKey] as PickUpContactAndListModel;
+            pickUpContactAndListModel.Reset();
+            var sampleContact = ContactAndListMethods.PickContact(pickUpContactAndListModel);
+            var sampleList = ContactAndListMethods.PickList(pickUpContactAndListModel);
+            if (sampleContact == null)
+            {
+                pickUpContactAndListModel.ErrorList.Add("No contact is found!");
+            }
+            if (sampleList == null)
+            {
+                pickUpContactAndListModel.ErrorList.Add("No list is found!");
+            }
+            //Add values to the model
+            pickUpContactAndListModel.IdentifierSource = "ExmTool";
+            pickUpContactAndListModel.IdentifierValue =
+                sampleContact.Identifiers.First(i => i.Source == "ExmTool")?.Identifier;
+            pickUpContactAndListModel.ListId = sampleList.Id;
+            pickUpContactAndListModel.ListName = sampleList.Name;
+            return View("~/Views/ExmTools/PickUpContactAndList.cshtml", pickUpContactAndListModel);
         }
 
 

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using EXMExtension.Models;
 
 namespace EXMExtension.Models
 {
-    public class SendAutomatedEmailModel:BaseTaskWrapper
+    public class SendAutomatedEmailModel : EmailAndContactListModel
     {
         public string MessageId;
 
@@ -14,16 +11,9 @@ namespace EXMExtension.Models
 
         public string IdentifierValue;
 
-        public SendAutomatedEmailModel()
+        public SendAutomatedEmailModel(string _toolName)
         {
-            ErrorList = new List<string>();
-        }
-
-        public SendAutomatedEmailModel(string _messageId, string _identifierSource, string _identifierValue)
-        {
-            MessageId = _messageId;
-            IdentifierSource = _identifierSource;
-            IdentifierValue = _identifierValue;
+            ToolName = _toolName;
             ErrorList = new List<string>();
         }
 

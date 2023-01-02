@@ -1,0 +1,44 @@
+﻿@{
+    Page.Title = "PickUpContactAndList";
+    Layout = "~/Views/ExmTools/_Layout.cshtml";
+}
+@model EXMExtension.Models.PickUpContactAndListModel
+
+@{
+    bool isError = Model.ErrorList.Count > 0;
+    Dictionary<string, string> information = new Dictionary<string, string>();
+    if (!isError)
+    {
+        information.Add("Contact Identifier Source", Model.IdentifierSource);
+        information.Add("Contact Identifier Value", Model.IdentifierValue);
+        information.Add("List Id", Model.ListId);
+        information.Add("List Name", Model.ListName);
+    }
+
+}
+<h2>The Random Contact And List information below: </h2>
+<br/>
+@if (!isError)
+{
+    foreach (var key in information.Keys)
+    {
+        <ol class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">@key</div>
+                    @information[key]
+                </div>
+                <span class="badge bg-primary rounded-pill">14</span>
+            </li>
+        </ol>
+    }
+}
+@if (Model.ErrorList.Count > 0)
+{
+    foreach (var er in Model.ErrorList)
+    {
+    <div class="alert alert-primary" role="alert">
+        @er
+    </div>
+    }
+}

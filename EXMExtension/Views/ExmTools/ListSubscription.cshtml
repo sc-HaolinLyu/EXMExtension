@@ -1,0 +1,123 @@
+﻿@{
+    Page.Title = "DecryptEmailLink";
+    Layout = "~/Views/ExmTools/_Layout.cshtml";
+}
+@model EXMExtension.Models.EmailAndContactListModel
+<form method="post" action="ListSubscription">
+    <div class="mb-3 col-6" name="Input1">
+        <label for="messageId" class="form-label">The email message id</label>
+        <input type="text" class="form-control" id="messageId" name="messageId" value="@Request.Form["messageId"]" />
+    </div>
+    <div class="mb-3 col-6" name="Input2">
+        <label for="managerRootId" class="form-label">The email manager root id</label>
+        <input class="form-control" type="text" id="authKey" name="managerRootId" value="@Request.Form["managerRootId"]" />
+    </div>
+    <div class="mb-3 col-6" name="Input3">
+        <label for="listId" class="form-label">The contact list Id</label>
+        <input class="form-control" type="text" id="queryString" name="listId" value="@Request.Form["listId"]" />
+    </div>
+    <div class="mb-3 col-6" name="Input4">
+        <label for="identifierSource" class="form-label">The contact identifierSource</label>
+        <input class="form-control" type="text" id="identifierSource" name="listId" value="@Request.Form["identifierSource"]" />
+    </div>
+    <div class="mb-3 col-6" name="Input5">
+        <label for="identifierValue" class="form-label">The contact identifierValue</label>
+        <input class="form-control" type="text" id="identifierValue" name="listId" value="@Request.Form["identifierValue"]" />
+    </div>
+    <div class="form-check-inline">
+        <input class="form-check-input" type="radio" name="listOperation" value="0" id="subscribe" checked>
+        <label class="form-check-label" for="subscribe">
+            Subscribe to email campaign
+        </label>
+    </div>
+    <div class="form-check-inline">
+        <input class="form-check-input" type="radio" name="listOperation" value="1" id="unsubscribe">
+        <label class="form-check-label" for="unsubscribe">
+            Unsubscribe from email campaign
+        </label>
+    </div>
+    <div class="form-check-inline">
+        <input class="form-check-input" type="radio" name="listOperation" value="2" id="unsubscribeAll">
+        <label class="form-check-label" for="unsubscribeAll">
+            Unsubscribe from all
+        </label>
+    </div>
+    <div class="form-check-inline">
+        <input class="form-check-input" type="radio" name="listOperation" value="3" id="addContact">
+        <label class="form-check-label" for="addContact">
+            Add contact to the list
+        </label>
+    </div>
+    <div class="form-check-inline">
+        <input class="form-check-input" type="radio" name="listOperation" value="4" id="removeContact">
+        <label class="form-check-label" for="removeContact">
+            Remove contact from the list
+        </label>
+    </div>
+    <div class="mb-3 col-3">
+        <button type="submit" class="btn btn-primary mb-3">Start to Decrypt the link!</button>
+    </div>
+</form>
+<script>
+    var loadInput = () => {
+        var radioVal = $('input[name="listOperation"]:checked').val();
+        if (radioVal === undefined) {
+            radioVal = 0;
+        }
+        switch (radioVal) {
+        case 0:
+            $('div[name="Input2"]').hide();
+            $('div[name="Input3"]').hide();
+            $('div[name="Input1"]').show();
+            $('div[name="Input4"]').show();
+            $('div[name="Input5"]').show();
+            break;
+        case 1:
+            $('div[name="Input2"]').hide();
+            $('div[name="Input3"]').hide();
+            $('div[name="Input1"]').show();
+            $('div[name="Input4"]').show();
+            $('div[name="Input5"]').show();
+            break;
+        case 2:
+            $('div[name="Input1"]').hide();
+            $('div[name="Input3"]').hide();
+            $('div[name="Input2"]').show();
+            $('div[name="Input4"]').show();
+            $('div[name="Input5"]').show();
+            break;
+        case 3:
+            $('div[name="Input1"]').hide();
+            $('div[name="Input2"]').hide();
+            $('div[name="Input3"]').show();
+            $('div[name="Input4"]').show();
+            $('div[name="Input5"]').show();
+            break;
+        case 4:
+            $('div[name="Input1"]').hide();
+            $('div[name="Input2"]').hide();
+            $('div[name="Input3"]').show();
+            $('div[name="Input4"]').show();
+            $('div[name="Input5"]').show();
+            break;
+        default:
+            break;
+        }
+    }
+
+    $( document ).ready(function() {
+        loadInput();
+    });
+
+    $('input[name="listOperation"]').onChange(loadInput);
+
+</script>
+@if (Model.ErrorList.Count > 0)
+{
+    foreach (var er in Model.ErrorList)
+    {
+    <div class="alert alert-primary" role="alert">
+        @er
+    </div>
+    }
+}

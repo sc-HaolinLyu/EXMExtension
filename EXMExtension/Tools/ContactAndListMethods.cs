@@ -212,6 +212,74 @@ namespace EXMExtension.Tools
             }
         }
 
+        /// <summary>
+        /// Pick up the first batch and choose a random contact inside and return it.
+        /// Returns null if no contact is found
+        /// </summary>
+        /// <returns></returns>
+        public static Contact PickContact(EmailAndContactListModel model)
+        {
+            try
+            {
+                using (XConnectClient client =
+                       Sitecore.XConnect.Client.Configuration.SitecoreXConnectClientConfiguration.GetClient())
+                {
+                    var queryable = client.Contacts.Where(c => c.Identifiers.Any(s => s.Source == "ExmTool"));
+                    var enumerable = queryable.GetBatchEnumeratorSync(100);
+                    List<Contact> candidates = new List<Contact>();
+                    if (enumerable.MoveNext())
+                        foreach (var c in enumerable.Current)
+                        {
+                            candidates.Add(c);
+                        }
+
+                    if (candidates.Count > 0)
+                    {
+                        int index = new Random().Next(candidates.Count);
+                        return candidates[index];
+                    }
+
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                model.ErrorList.Add(e.Message);
+                return null;
+            }
+            
+            
+        }
+
+        public static ContactListModel PickList(EmailAndContactListModel model)
+        {
+            var contactListRepository = ServiceLocator.ServiceProvider.GetService<IFetchRepository<ContactListModel>>();
+            try
+            {
+                using (var lists = contactListRepository.GetAll().Where(l => l.Name.Contains("ExmTool")).GetEnumerator())
+                {
+                    var listsList = new List<ContactListModel>();
+                    while (lists.MoveNext())
+                    {
+                        listsList.Add(lists.Current);
+                    }
+
+                    if (listsList.Count > 0)
+                    {
+                        int index = new Random().Next(listsList.Count);
+                        return listsList[index];
+                    }
+
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                model.ErrorList.Add(e.Message);
+                return null;
+            }
+        }
+
 
 
         /// <summary>

@@ -16,6 +16,25 @@ namespace EXMExtension.Models
 
         public static Dictionary<string, BaseTaskWrapper> ActiveTasks;
 
+        private string _activeToolName;
+
+        public string ActiveToolName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_activeToolName))
+                {
+                    return "Home";
+                }
+
+                return _activeToolName;
+            }
+            set
+            {
+                _activeToolName = value;
+            }
+        }
+
         private object obj = new object();
         public ExmToolGlobalModel()
         {
@@ -41,6 +60,7 @@ namespace EXMExtension.Models
                     }
                 }
             }
+
            
         }
     }

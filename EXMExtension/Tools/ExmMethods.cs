@@ -12,6 +12,7 @@ using Sitecore.ExM.Framework.Helpers;
 using Sitecore.Framework.Conditions;
 using Sitecore.Modules.EmailCampaign.Core.Crypto;
 using System.Collections.Generic;
+using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Sitecore.DependencyInjection;
 using Sitecore.EmailCampaign.Model.Messaging;
@@ -25,6 +26,9 @@ using Sitecore.EmailCampaign.Cd.Services;
 
 namespace EXMExtension.Tools
 {
+
+    
+    
     static class ExmMethods
     {
         private static ILogger _exmLogger = new Logger("Sitecore.EXM", "false");
@@ -33,7 +37,7 @@ namespace EXMExtension.Tools
 
         private static string _authKeyName = "EXM.AuthenticationKey";
 
-        private static IClientApiService _clientApiService =
+        private static readonly IClientApiService _clientApiService =
             ServiceLocator.ServiceProvider.GetService<IClientApiService>();
 
         public static void InitializeKeys()
@@ -97,6 +101,29 @@ namespace EXMExtension.Tools
                 model.ErrorList.Add("The automated email was failed to send");
                 ExmMethods._exmLogger.LogError(ex.Message, ex);
             }
+        }
+
+        public static void UpdateListSubscription(ListSubscribeOperation operation, string identifierValue, string identifierSource, string listId, string messageId, string managerRootId)
+        {
+            try
+            {
+                UpdateListSubscriptionMessage message = new UpdateListSubscriptionMessage()
+                {
+                    ContactIdentifier =
+                        new ContactIdentifier(identifierSource, identifierValue, ContactIdentifierType.Known),
+                    ListId = new Guid(listId),
+                    ListSubscribeOperation = operation,
+                    ManagerRootId = new Guid(managerRootId),
+                    MessageId = new Guid(messageId),
+                };
+                _clientApiService.UpdateListSubscription(message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
         }
 
         private static byte[] ArgumentAsHexadecimalToByteArray(string value, string argumentName, bool acceptEmpty, ILogger logger)

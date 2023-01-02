@@ -1,31 +1,56 @@
 ﻿@{
-    Page.Title = "Title goes here";
+    Page.Title = "The Home page";
     Layout = "~/Views/ExmTools/_Layout.cshtml";
     var tools = ExmToolGlobalModel.ToolMapping;
-    var dummy = "mytest";
 }
 @using EXMExtension.Models
 @model EXMExtension.Models.ExmToolGlobalModel
-<div>
-    This is the entry page
-    
-    
-    <ul class="list-group">
-        @foreach (var key in tools.Keys)
-        {
-            var tool = tools[key];
-            <li class="list-group-item">
-                <p>
-                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#@tool.Action" aria-expanded="false" aria-controls="@tool.Sequence">
-                        @tool.Name
-                    </button>
-                </p>
-                <div class="collapse" id="@tool.Action">
-                    <div class="card card-body">
-                       @tool.Description
+<div class=".container">
+    <div class="row">
+        <div class="col-4">
+            <div id="toolsList" class="list-group">
+                @foreach (var key in tools.Keys)
+                {
+                    var tool = tools[key];
+                    <a class="list-group-item list-group-item-action" id="list-@tool.Action">@tool.Name</a>
+                }
+            </div>
+        </div>
+        <div class="col-8">
+            <div id="toolsContent" tabindex="0">
+                @foreach (var key in tools.Keys)
+                {
+                    var tool = tools[key];
+                    <div ref="list-@tool.Action">
+                        <h4>@tool.Name</h4>
+                        <p>@tool.Description</p>
                     </div>
-                </div>
-            </li>
-        }
-    </ul>
+                }
+            </div>
+        </div>
+    </div>
 </div>
+@section scripts {
+    <script>
+        $('#toolsList a').click(function() {
+            $('#toolsList a').removeClass("active");
+            $(this).addClass("active");
+            var clickedTool = $(this).attr("id");
+            $('#toolsContent div').each(function() {
+                $(this).hide();
+                if ($(this).attr("ref") === clickedTool) {
+                    $(this).show();
+                }
+            });
+        });
+
+        $('#toolsList a').css("cursor", "pointer");
+
+        $('#toolsList a').first().addClass("active");
+
+        $('#toolsContent div').hide();
+
+        $('#toolsContent div').first().show();
+
+    </script>
+}
