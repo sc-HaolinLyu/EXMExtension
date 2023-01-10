@@ -1,0 +1,113 @@
+﻿@{
+    Page.Title = "UpdateListSubscription";
+    Layout = "~/Views/ExmTools/_Layout.cshtml";
+}
+@model EXMExtension.Models.EmailAndContactListModel
+<form method="post" action="UpdateListSubscription">
+    <div class="mb-3 col-6" name="messageId">
+        <label for="messageId" class="form-label">The email message id</label>
+        <input type="text" class="form-control" id="messageId" name="messageId" value="@Request.Form["messageId"]" />
+    </div>
+    <div class="mb-3 col-6" name="managerRootId">
+        <label for="managerRootId" class="form-label">The email manager root id</label>
+        <input class="form-control" type="text" id="managerRootId" name="managerRootId" value="@Request.Form["managerRootId"]" />
+    </div>
+    <div class="mb-3 col-6" name="listId">
+        <label for="listId" class="form-label">The contact list Id</label>
+        <input class="form-control" type="text" id="listId" name="listId" value="@Request.Form["listId"]" />
+    </div>
+    <div class="mb-3 col-6" name="identifierSource">
+        <label for="identifierSource" class="form-label">The contact identifierSource</label>
+        <input class="form-control" type="text" id="identifierSource" name="identifierSource" value="@Request.Form["identifierSource"]" />
+    </div>
+    <div class="mb-3 col-6" name="identifierValue">
+        <label for="identifierValue" class="form-label">The contact identifierValue</label>
+        <input class="form-control" type="text" id="identifierValue" name="identifierValue" value="@Request.Form["identifierValue"]" />
+    </div>
+    <div class="form-check-inline">
+        <input class="form-check-input" type="radio" name="listOperation" value="0" id="subscribe" checked>
+        <label class="form-check-label" for="subscribe">
+            Subscribe to email campaign
+        </label>
+    </div>
+    <div class="form-check-inline">
+        <input class="form-check-input" type="radio" name="listOperation" value="1" id="unsubscribe">
+        <label class="form-check-label" for="unsubscribe">
+            Unsubscribe from email campaign
+        </label>
+    </div>
+    <div class="form-check-inline">
+        <input class="form-check-input" type="radio" name="listOperation" value="2" id="unsubscribeAll">
+        <label class="form-check-label" for="unsubscribeAll">
+            Unsubscribe from all
+        </label>
+    </div>
+    <div class="form-check-inline">
+        <input class="form-check-input" type="radio" name="listOperation" value="3" id="addContact">
+        <label class="form-check-label" for="addContact">
+            Add contact to the list
+        </label>
+    </div>
+    <div class="form-check-inline">
+        <input class="form-check-input" type="radio" name="listOperation" value="4" id="removeContact">
+        <label class="form-check-label" for="removeContact">
+            Remove contact from the list
+        </label>
+    </div>
+    <div class="mb-3 col-3" style="margin-top: 30px">
+        <button type="submit" class="btn btn-primary mb-3">ListSubscription API</button>
+    </div>
+</form>
+@section scripts {
+    <script>
+        var loadInput = () => {
+            var radioVal = $('input[name="listOperation"]:checked').val();
+            if (radioVal === undefined) {
+                radioVal = 0;
+            }
+            switch (radioVal[0]) {
+            case '0':
+            case '1':
+                    $('div[name="managerRootId"]').hide();
+                    $('div[name="listId"]').hide();
+                    $('div[name="messageId"]').show();
+                    $('div[name="identifierSource"]').show();
+                    $('div[name="identifierValue"]').show();
+                break;
+            case '2':
+                    $('div[name="messageId"]').hide();
+                    $('div[name="listId"]').hide();
+                    $('div[name="managerRootId"]').show();
+                    $('div[name="identifierSource"]').show();
+                    $('div[name="identifierValue"]').show();
+                break;
+            case '3':
+            case '4':
+                    $('div[name="messageId"]').hide();
+                    $('div[name="managerRootId"]').hide();
+                    $('div[name="listId"]').show();
+                    $('div[name="identifierSource"]').show();
+                    $('div[name="identifierValue"]').show();
+                break;
+            default:
+                break;
+            }
+        }
+
+        $(document).ready(function() {
+            loadInput();
+        });
+
+        $('input[name="listOperation"]').change(() => { loadInput() });
+
+    </script>
+}
+@if (Model.ErrorList.Count > 0)
+{
+    foreach (var er in Model.ErrorList)
+    {
+        <div class="alert alert-primary" role="alert">
+            @er
+        </div>
+    }
+}

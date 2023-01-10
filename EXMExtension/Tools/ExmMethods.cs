@@ -66,7 +66,7 @@ namespace EXMExtension.Tools
                 if (!string.IsNullOrEmpty(result))
                     return result;
                 //html decode the query to try again.
-                query = HttpUtility.HtmlDecode(query);
+                query = HttpUtility.UrlDecode(query);
                 result = cipher.TryDecrypt(query);
                 return result; // decryption fail
         }
@@ -105,9 +105,7 @@ namespace EXMExtension.Tools
 
         public static void UpdateListSubscription(ListSubscribeOperation operation, string identifierValue, string identifierSource, string listId, string messageId, string managerRootId)
         {
-            try
-            {
-                UpdateListSubscriptionMessage message = new UpdateListSubscriptionMessage()
+            UpdateListSubscriptionMessage message = new UpdateListSubscriptionMessage()
                 {
                     ContactIdentifier =
                         new ContactIdentifier(identifierSource, identifierValue, ContactIdentifierType.Known),
@@ -117,13 +115,6 @@ namespace EXMExtension.Tools
                     MessageId = new Guid(messageId),
                 };
                 _clientApiService.UpdateListSubscription(message);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-            
         }
 
         private static byte[] ArgumentAsHexadecimalToByteArray(string value, string argumentName, bool acceptEmpty, ILogger logger)

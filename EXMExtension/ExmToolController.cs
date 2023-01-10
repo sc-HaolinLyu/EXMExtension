@@ -9,6 +9,7 @@ using EXMExtension.Models;
 using EXMExtension.Tools;
 using Sitecore;
 using Sitecore.Diagnostics;
+using Sitecore.EmailCampaign.Model.Messaging;
 using Sitecore.localhost;
 using Sitecore.Mvc.Extensions;
 using Sitecore.Shell.Framework.Commands.TemplateBuilder;
@@ -207,6 +208,127 @@ namespace EXMExtension
             pickUpContactAndListModel.ListId = sampleList.Id;
             pickUpContactAndListModel.ListName = sampleList.Name;
             return View("~/Views/ExmTools/PickUpContactAndList.cshtml", pickUpContactAndListModel);
+        }
+
+        [System.Web.Mvc.AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult UpdateListSubscription(string toolKey = "UpdateListSubscription")
+        {
+            model.ActiveToolName = toolKey;
+            this.ViewData["ExmToolName"] = model.ActiveToolName;
+            if (!ExmToolGlobalModel.ActiveTasks.ContainsKey(toolKey))
+            {
+                ExmToolGlobalModel.ActiveTasks.Add(toolKey, new UpdateListSubscriptionModel());
+            }
+            var updateListSubscriptionModel = ExmToolGlobalModel.ActiveTasks[toolKey] as UpdateListSubscriptionModel;
+            return View("~/Views/ExmTools/UpdateListSubscription.cshtml", updateListSubscriptionModel);
+
+        }
+
+        [System.Web.Mvc.AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult UpdateListSubscription()
+        {
+            string toolKey = "UpdateListSubscription";
+            string dummyGuid = "00000000-0000-0000-0000-000000000000";
+            var updateListSubscriptionModel = ExmToolGlobalModel.ActiveTasks[toolKey] as UpdateListSubscriptionModel;
+            var updateListOperation = Request.Form["listOperation"];
+            var managerRootId = Request.Form["managerRootId"];
+            var messageId = Request.Form["messageId"];
+            var contactIdentifierSource = Request.Form["identifierSource"];
+            var contactIdentifierValue = Request.Form["identifierValue"];
+            var operation = ListSubscribeOperation.Subscribe;
+            var listId = Request.Form["listId"];
+            Log.Info("Debug: The values "+ updateListOperation+ managerRootId+ messageId+ contactIdentifierSource+contactIdentifierValue, this);
+            updateListSubscriptionModel.Reset();
+            if (string.IsNullOrEmpty(updateListOperation))
+            {
+                updateListSubscriptionModel.ErrorList.Add("The update list operation is not clear");
+                return UpdateListSubscription(toolKey);
+            }
+            if (updateListOperation[0] < '0' || updateListOperation[0] > '4')
+            {
+                updateListSubscriptionModel.ErrorList.Add("The update list operation is not clear");
+                return UpdateListSubscription(toolKey);
+            }
+            /*
+             0: subscribe to specific email campaign
+             1: unsubscribe from specific email campaign
+             2: unsubscribe from all email campaign and put it in global opt-out list
+             3: add to specific list
+             4: remove from specific list
+             */
+            switch (updateListOperation[0])
+            {
+                case '0':
+                case '1':
+                    {
+                    if (string.IsNullOrEmpty(messageId) || string.IsNullOrEmpty(contactIdentifierSource) ||
+                        string.IsNullOrEmpty(contactIdentifierValue))
+                    {
+                        updateListSubscriptionModel.ErrorList.Add(
+                            "The message id, contact identifier information should be provided");
+                    }
+
+                    operation = updateListOperation[0] == '0'
+                        ? ListSubscribeOperation.Subscribe
+                        : ListSubscribeOperation.Unsubscribe;
+                    managerRootId = dummyGuid;
+                    listId = dummyGuid;
+                    break;
+                }
+                case '2':
+                {
+                    if (string.IsNullOrEmpty(managerRootId) || string.IsNullOrEmpty(contactIdentifierSource) ||
+                        string.IsNullOrEmpty(contactIdentifierValue))
+                    {
+                        updateListSubscriptionModel.ErrorList.Add(
+                            "The managerRoot id, contact identifier information should be provided");
+                    }
+
+                    operation = ListSubscribeOperation.UnsubscribeFromAll;
+                    listId = dummyGuid;
+                    messageId = dummyGuid;
+                    break;
+                }
+                case '3':
+                case '4':
+                {
+                    if (string.IsNullOrEmpty(listId) || string.IsNullOrEmpty(contactIdentifierSource) ||
+                        string.IsNullOrEmpty(contactIdentifierValue))
+                    {
+                        updateListSubscriptionModel.ErrorList.Add(
+                            "The list id, contact identifier information should be provided");
+                    }
+
+                    operation = updateListOperation[0] == '3'
+                        ? ListSubscribeOperation.AddToList
+                        : ListSubscribeOperation.RemoveFromList;
+                    messageId = dummyGuid;
+                    managerRootId = dummyGuid;
+                    break;
+                }
+                default:
+                {
+                    updateListSubscriptionModel.ErrorList.Add(
+                        "unknown operation");
+                    break;
+                }
+            }
+
+            if(updateListSubscriptionModel.ErrorList.Count>0)
+                return UpdateListSubscription(toolKey);
+
+            //Everything looks good.
+            try
+            {
+                ExmMethods.UpdateListSubscription(operation, contactIdentifierValue, contactIdentifierSource, listId,
+                    messageId, managerRootId);
+            }
+            catch (Exception ex)
+            {
+                updateListSubscriptionModel.ErrorList.Add("There is error during list operation " + ex.Message);
+            }
+            return UpdateListSubscription(toolKey);
+
         }
 
 

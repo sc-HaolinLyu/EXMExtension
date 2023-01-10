@@ -138,6 +138,7 @@
     <Compile Include="Models\EmailAndContactListModel.cs" />
     <Compile Include="Models\SendAutomatedEmailModel.cs" />
     <Compile Include="Models\PickUpContactAndListModel.cs" />
+    <Compile Include="Models\UpdateListSubscriptionModel.cs" />
     <Compile Include="Tools\ContactAndListMethods.cs" />
     <Compile Include="Tools\ExmMethods.cs" />
     <Compile Include="Tools\GeneralMethods.cs" />

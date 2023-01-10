@@ -1,4 +1,5 @@
-﻿using EXMExtension.Models;
+﻿using System.Collections.Generic;
+using EXMExtension.Models;
 
 namespace EXMExtension.Models
 {
@@ -15,6 +16,7 @@ namespace EXMExtension.Models
         public PickUpContactAndListModel(string _toolName)
         {
             ToolName = _toolName;
+            ErrorList = new List<string>();
         }
 
         public override void Reset()
@@ -24,6 +26,7 @@ namespace EXMExtension.Models
             ListId = "";
             ListName = "";
             ToolName = "";
+            ErrorList.Clear();
         }
     }
 }
