@@ -1,33 +1,38 @@
 ﻿@{
-    Page.Title = "Title goes here";
+    Page.Title = "Generate Or Remove Contact Page";
     Layout = "~/Views/ExmTools/_Layout.cshtml";
 }
 @using EXMExtension.Tools
 @model EXMExtension.Models.GenerateContactModel
 <div>
-    <h4>Generate Contact</h4>
     <br />
     @if (Model.IsActive)
     {
 
         double contactPercent = @Model.CurrentProgressContact * 1.0 / @Model.TargetContact;
         contactPercent *= 100;
-        <div>@Model.Title</div>
-        <div>@Model.CurrentInfo[0] @Model.CurrentProgressContact</div>
-        <div>@Model.TargetInfo[0] @Model.TargetContact</div>
 
+        <div></div>
         if (Model.Current == ContactOperations.GenerateContact)
         {
+            <div>Generate Contact</div>
+            <div>The number of contact that is going to be generated: @Model.TargetContact</div>
+            <div>The number of generated contact: @Model.CurrentProgressContact</div>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: @contactPercent%" aria-valuenow="@contactPercent" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
             double listPercent = @Model.CurrentProgressList * 1.0 / @Model.TargetList;
             listPercent *= 100;
-            <div>@Model.CurrentInfo[1] @Model.CurrentProgressList</div>
-            <div>@Model.TargetInfo[1] @Model.TargetList</div>
+            <div>The number of generated lists: @Model.CurrentProgressList</div>
+            <div>The number of lists that is going to be generated: @Model.TargetList</div>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" aria-label="Basic example" style="width: @listPercent%" aria-valuenow="@listPercent" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
+        }
+        else
+        {
+            <div>Remove Contacts In Progress...</div>
+            <div>The number of removed contact: @Model.CurrentProgressContact</div>
         }
         <script type="text/javascript">
             setInterval(() => {

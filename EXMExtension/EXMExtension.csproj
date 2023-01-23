@@ -132,6 +132,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\DispatchSummarylModel.cs" />
     <Compile Include="ExmToolController.cs" />
     <Compile Include="EXMExtensionRegister.cs" />
     <Compile Include="Models\DecryptEmailLinkModel.cs" />

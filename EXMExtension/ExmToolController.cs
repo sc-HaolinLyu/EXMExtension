@@ -201,6 +201,11 @@ namespace EXMExtension
             {
                 pickUpContactAndListModel.ErrorList.Add("No list is found!");
             }
+
+            if (pickUpContactAndListModel.ErrorList.Count > 0)
+            {
+                return View("~/Views/ExmTools/PickUpContactAndList.cshtml", pickUpContactAndListModel);
+            }
             //Add values to the model
             pickUpContactAndListModel.IdentifierSource = "ExmTool";
             pickUpContactAndListModel.IdentifierValue =
@@ -222,6 +227,18 @@ namespace EXMExtension
             var updateListSubscriptionModel = ExmToolGlobalModel.ActiveTasks[toolKey] as UpdateListSubscriptionModel;
             return View("~/Views/ExmTools/UpdateListSubscription.cshtml", updateListSubscriptionModel);
 
+        }
+
+        public ActionResult DispatchSummary(string toolKey = "DispatchSummary")
+        {
+            model.ActiveToolName = toolKey;
+            this.ViewData["ExmToolName"] = model.ActiveToolName;
+            if (!ExmToolGlobalModel.ActiveTasks.ContainsKey(toolKey))
+            {
+                ExmToolGlobalModel.ActiveTasks.Add(toolKey, new DispatchSummaryModel());
+            }
+            var dispatchSummaryModel = ExmToolGlobalModel.ActiveTasks[toolKey] as DispatchSummaryModel;
+            return View("~/Views/ExmTools/DispatchSummary.cshtml", dispatchSummaryModel);
         }
 
         [System.Web.Mvc.AcceptVerbs(HttpVerbs.Post)]
@@ -339,7 +356,7 @@ namespace EXMExtension
         {
             string toolKey = "GenerateContacts";
             var contactModel = ExmToolGlobalModel.ActiveTasks[toolKey] as GenerateContactModel;
-            ContactAndListMethods.SetContactInfo(ContactOperations.RemoveContact, contactModel);
+            contactModel.Current = ContactOperations.RemoveContact;
             ContactAndListMethods.RemoveContacts(toolKey, 50);
             ContactAndListMethods.RemoveLists(toolKey);
             return GenerateContacts("GenerateContacts");
@@ -359,6 +376,7 @@ namespace EXMExtension
             var listNumInput = Request.Form["listNumber"];
             var contactModel = ExmToolGlobalModel.ActiveTasks[toolKey] as GenerateContactModel;
             contactModel.ErrorList.Clear();//clear old errors on each submission
+            contactModel.Current = ContactOperations.GenerateContact;
             if (!int.TryParse(contactNumInput, out int contactNum))
             {
                 contactModel.ErrorList.Add("The contact number can't be parsed");
@@ -385,7 +403,6 @@ namespace EXMExtension
                 return GenerateContacts(toolKey);
             }
 
-            ContactAndListMethods.SetContactInfo(ContactOperations.GenerateContact, contactModel);
             ContactAndListMethods.GenerateContacts(contactNum, listNum, toolKey, 50);
             
             return GenerateContacts(toolKey);

@@ -52,9 +52,7 @@ namespace EXMExtension.Tools
                         {
                             int contactNumTemp = contactNum;
                             int batchsizeTemp = batchSize;
-                            Log.Info("The current listNum"+list, new object());
                             string id = CreateContactList();
-                            Log.Info("Debug: The current list id "+id, new object());
                             while (contactNumTemp > 0)
                             {
                                 List<Contact> generatedContacts = new List<Contact>();
@@ -69,8 +67,8 @@ namespace EXMExtension.Tools
                                     client.AddContact(curContact);
                                     generatedContacts.Add(curContact);
                                 }
-                                Thread.Sleep(200);
-                                Log.Info("The current progress "+model.CurrentProgressContact+"|"+model.CurrentProgressList+"|"+contactNumTemp+"|"+batchsizeTemp, new object());
+                                //prevent overload
+                                Thread.Sleep(50);
                                 client.Submit();
                                 AddContactsToList(id, generatedContacts);
                             }
@@ -185,33 +183,7 @@ namespace EXMExtension.Tools
         }
 
 
-        public static void SetContactInfo(ContactOperations operation, GenerateContactModel model)
-        {
-            switch (operation)
-            {
-                case ContactOperations.GenerateContact:
-                {
-                    model.CurrentInfo[0] = "the current generated contacts:";
-                    model.CurrentInfo[1] = "the current generated lists:";
-                    model.TargetInfo[0] = "The total contacts that will be generated:";
-                    model.TargetInfo[1] = "The total lists that will be generated:";
-                    model.Title = "There is an active contact generation task right now, Please wait for a while";
-                    model.Current = ContactOperations.GenerateContact;
-                    break;
-                }
-                case ContactOperations.RemoveContact:
-                {
-                    model.CurrentInfo[0] = "The total contacts that will be removed:";
-                    model.TargetInfo[0] = "The current removed contacts:";
-                    model.Title = "There is an active contact purging task right now, Please wait for a while";
-                    model.Current = ContactOperations.RemoveContact;
-                        break;
-                }
-                default:
-                    break;
-            }
-        }
-
+        
         /// <summary>
         /// Pick up the first batch and choose a random contact inside and return it.
         /// Returns null if no contact is found

@@ -15,7 +15,7 @@ using Sitecore.XConnect.Client;
 using Sitecore.XConnect.Collection.Model;
 
 
-namespace EXMExtension
+namespace EXMExtension.Tools
 {
     public class GeneralMethods
     {
@@ -54,6 +54,15 @@ namespace EXMExtension
             }
         }
 
+        public static string ConvertToString(double value)
+        {
+            int num = (int)Math.Round(value);
+            if (num != 0)
+            {
+                return num.ToString();
+            }
+            return Math.Round(value, 3).ToString();
+        }
 
         public static T2 ReadValueFromDictionary<T1, T2>(Dictionary<T1, T2> dic, T1 key) where T2 : new()
         {

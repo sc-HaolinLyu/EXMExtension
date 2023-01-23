@@ -1,8 +1,124 @@
-﻿@{
-    Page.Title = "Title goes here";
+﻿@using Sitecore.Configuration
+@using Sitecore.DependencyInjection
+@using Sitecore.EDS.Core.Net.Smtp
+@using Sitecore.EmailCampaign.Model.Web.Settings
+@using Microsoft.Extensions.DependencyInjection
+@using Sitecore.EmailCampaign.Cm.Dispatch
+@using Sitecore.EmailCampaign.Model.Web
+@using Sitecore.Modules.EmailCampaign.Core.Dispatch
+@using EXMExtension
+@{
+    Page.Title = "DispatchSummary";
     Layout = "~/Views/ExmTools/_Layout.cshtml";
-}
+    var connectionPoolSettings = Factory.CreateObject("exm/eds/connectionPoolSettings", assert: false) as ConnectionPoolSettings;
+    var smtpConnection = connectionPoolSettings == null ? string.Empty : connectionPoolSettings.MaxPoolSize.ToString();
+    var ecmSettings = ServiceLocator.ServiceProvider.GetService<EcmSettings>();
+    string warningMessage = GlobalSettings.MaxGenerationThreads > GlobalSettings.NumberThreads ? "The MaxGenerationThreads setting should be the same or lower than the NumberThreads setting. A higher value has no effect." : "";
+    var messageTaskRunner = ServiceLocator.ServiceProvider.GetService<IMessageTaskRunner>();
+    var runningTasks = messageTaskRunner.GetRunningTasks().OfType<DispatchTask>().ToList();
+} 
+    <div>
+<table class="table">
+        <tr>
+            <td>CPU Cores: @System.Environment.ProcessorCount</td>
+            <td>Number of Threads: @GlobalSettings.NumberThreads</td>
+            <td>Dispatch BatchSize: @ecmSettings.DispatchBatchSize</td>
+        </tr>
+        <tr>
+            <td>Max Generating Threads: @GlobalSettings.MaxGenerationThreads</td>
+            <td>Max Smtp Connections: @smtpConnection</td>
+            <td>Send Emulation Time: @GlobalSettings.EmulationMinSendTime "~" @GlobalSettings.EmulationMaxSendTime</td>
+        </tr>
+    </table>
+    <p>Warnings: @warningMessage </p>
+    <p>Errors: </p>
+    @if (runningTasks.Count > 0)
+    {
+        foreach (var currentTask in runningTasks)
+        {
+            TimeSummary ts = currentTask.Summary;
+            TimeSpan timeSpan = ts.AvgProcessTime - ts.AvgSendTime;
+            <p>The current CPU Usage: @ts.AverageCpuUsage</p>
+            <p>@EcmTexts.Message @currentTask.Message.InnerItem.DisplayName</p>
+            <p>@EcmTexts.StartTime @ts.ProcessingTimeStarted.ToString("yyy-MM-dd HH:mm:ss")</p>
+            <p>@EcmTexts.Duration @ts.ProcessingDuration.ToString()</p>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>@EcmTexts.FetchRecipient </th>
+                    <th>@EcmTexts.GenerateSingleEmail </th>
+                    <th>@EcmTexts.SendEmail </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>@EcmTexts.LoadFromQueue @ts.AverageLoadFromQueueTime.TotalMilliseconds ms</td>
+                    <td>@EcmTexts.Total @EXMExtension.Tools.GeneralMethods.ConvertToString((ts.AvgTaskWaitTime + timeSpan + ts.AvgSendingTime).TotalMilliseconds) ms</td>
+                    <td>@EcmTexts.FailedSendAttempts @ts.FailedSendAttempt.ToString()</td>
+                </tr>
+                <tr>
+                    <td>@EcmTexts.LoadContacts @EXMExtension.Tools.GeneralMethods.ConvertToString(ts.AverageLoadContactsTime.TotalMilliseconds) ms</td>
+                    <td>@EcmTexts.Wait @EXMExtension.Tools.GeneralMethods.ConvertToString(ts.AvgTaskWaitTime.TotalMilliseconds) ms</td>
+                    <td>@EcmTexts.Wait @EXMExtension.Tools.GeneralMethods.ConvertToString(ts.AvgSendMailWait.TotalMilliseconds) ms</td>
 
-<div>
-    Dispatch Summary
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>@EcmTexts.Process @EXMExtension.Tools.GeneralMethods.ConvertToString(timeSpan.TotalMilliseconds) ms</td>
+                    <td>@EcmTexts.Process @EXMExtension.Tools.GeneralMethods.ConvertToString(ts.AvgSendingTime.TotalMilliseconds) ms</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>@EcmTexts.GetPage @EXMExtension.Tools.GeneralMethods.ConvertToString(ts.AvgGetPageTime.TotalMilliseconds) ms</td>
+                    <td>@EcmTexts.UpdateEmailHistoryFacet @EXMExtension.Tools.GeneralMethods.ConvertToString(ts.AverageUpdateEmailHistoryFacetTime.TotalMilliseconds) ms</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>@EcmTexts.CollectFiles @EXMExtension.Tools.GeneralMethods.ConvertToString(ts.AvgCollectFilesTime.TotalMilliseconds) ms </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>@EcmTexts.GenerateMime @EXMExtension.Tools.GeneralMethods.ConvertToString(ts.AvgGenerateMimeTime.TotalMilliseconds) ms</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>@EcmTexts.ParsingTime @EXMExtension.Tools.GeneralMethods.ConvertToString(ts.AvgParsingTime.TotalMilliseconds) ms</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>@EcmTexts.GetConnectionTime @EXMExtension.Tools.GeneralMethods.ConvertToString(ts.AvgGetconnectionTime.TotalMilliseconds) ms</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>@EcmTexts.SendingTime @EXMExtension.Tools.GeneralMethods.ConvertToString(ts.AvgSendTime.TotalMilliseconds) ms</td>
+                    <td></td>
+                </tr>
+
+                </tbody>
+            </table>
+            <table class="table">
+                <tbody>
+                <tr>
+                    <td>Average Sending Speed On this server: @ts.ServerSendingMailsPerSecond.ToString() email/s</td>
+                    <td>Average Fetching Speed:@ts.RecipientsFetchedPerSecond.ToString() recipient/s</td>
+                    <td>Average Generating Speed:@ts.GeneratingMailsPerSecond.ToString() email content/s</td>
+                </tr>
+                <tr>
+                    <td>Average Sending Speed: @ts.SendingMailsPerSecond.ToString() email/s</td>
+                    <td>Total Mail Sent:@ts.MessagesProcessed.ToString() on this server</td>
+                    <td>Required Bandwidth:@ts.BandwidthKbPerSecond.ToString() KB/s</td>
+                </tr>
+                </tbody>
+            </table>
+        }
+    }
+    else
+    {
+        <p>There is no active dispatch task now!</p>
+    }
 </div>
+

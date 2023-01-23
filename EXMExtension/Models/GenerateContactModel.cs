@@ -19,12 +19,6 @@ namespace EXMExtension.Models
 
         public int TargetList;
 
-        public string [] CurrentInfo;
-
-        public string [] TargetInfo;
-
-        public string Title;
-
         public ContactOperations Current;
 
         public GenerateContactModel()
@@ -47,9 +41,6 @@ namespace EXMExtension.Models
 
             Current = ContactOperations.Idle;
 
-            CurrentInfo = new string[2];
-
-            TargetInfo = new string[2];
         }
 
         public override void Reset()
@@ -70,9 +61,6 @@ namespace EXMExtension.Models
 
             Current = ContactOperations.Idle;
 
-            CurrentInfo = new string[2];
-
-            TargetInfo = new string[2];
         }
     }
 }
